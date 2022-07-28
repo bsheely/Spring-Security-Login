@@ -1,42 +1,61 @@
 package com.example.springsecuritylogin.view;
 
 import com.example.springsecuritylogin.security.SecurityUtils;
-import com.vaadin.flow.component.login.LoginI18n;
-import com.vaadin.flow.component.login.LoginOverlay;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.login.LoginForm;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
 
-@Route("login")
+@Route(value = "login", layout = LoginLayout.class)
 @PageTitle("Login")
-public class LoginView extends LoginOverlay implements BeforeEnterObserver, AfterNavigationObserver {
+public class LoginView extends VerticalLayout implements BeforeEnterObserver, AfterNavigationObserver {
+    private final LoginForm login;
+    private String username;
 
     public LoginView() {
         addClassName("login-view");
-        LoginI18n loginOverlay = LoginI18n.createDefault();
-        loginOverlay.setHeader(new LoginI18n.Header());
-        loginOverlay.getHeader().setTitle("Vaadin and Spring Security");
-        loginOverlay.getHeader().setDescription("Username: bsheely / Password: 1234");
-        loginOverlay.setAdditionalInformation("This Vaadin component does not permit adding anything else to this page. Thus, new users must be created (added to the database) elsewhere.");
-        loginOverlay.setForm(new LoginI18n.Form());
-        loginOverlay.getForm().setSubmit("Sign in");
-        loginOverlay.getForm().setTitle("Sign in");
-        loginOverlay.getForm().setUsername("Username");
-        loginOverlay.getForm().setPassword("Password");
-        setI18n(loginOverlay);
-        setForgotPasswordButtonVisible(false);
-        setAction("login");
+        login = new LoginForm();
+        login.setForgotPasswordButtonVisible(false);
+        login.addForgotPasswordListener(e -> forgotPassword());
+        login.getElement().getThemeList().add("dark");
+        login.setAction("login");
+        setSizeFull();
+        setAlignItems(Alignment.CENTER);
+        setJustifyContentMode(JustifyContentMode.CENTER);
+        add(login);
     }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         if (SecurityUtils.isUserLoggedIn()) {
             event.forwardTo(MainView.class);
-        } else {
-            setOpened(true);
         }
     }
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
-        setError(event.getLocation().getQueryParameters().getParameters().containsKey("error"));
+        login.setError(event.getLocation().getQueryParameters().getParameters().containsKey("error"));
+    }
+
+    private void forgotPassword() {
+        //NOTE: Vaadin doesn't provide a means of getting the username from the login form
+        Dialog dialog = new Dialog();
+        dialog.setHeaderTitle("Submit account username");
+        dialog.getElement().getThemeList().add("dark");
+        TextField textField = new TextField("Username");
+        textField.setWidthFull();
+        textField.setRequired(true);
+        dialog.add(textField);
+        Button cancel = new Button("Cancel", e -> dialog.close());
+        Button submit = new Button("Submit", e -> {
+            username = textField.getValue();
+            dialog.close();
+        });
+        submit.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        dialog.getFooter().add(cancel,submit);
+        dialog.open();
     }
 }

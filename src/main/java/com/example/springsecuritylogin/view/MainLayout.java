@@ -18,7 +18,7 @@ public class MainLayout extends AppLayout {
     }
 
     public void createHeader() {
-        H3 logo = new H3("Vaadin/Spring Security demo");
+        H3 logo = new H3("Spring Security authentication");
         logo.getStyle().set("margin-left", "20px");
         logo.getStyle().set("margin-top", "11px");
         logo.addClassName("logo");

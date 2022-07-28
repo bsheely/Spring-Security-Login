@@ -14,11 +14,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EnableWebSecurity
 @Configuration
-public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
+public class SecurityConfig extends VaadinWebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
-    public SecurityConfiguration(@Autowired UserDetailsService userDetailsService) {
+    public SecurityConfig(@Autowired UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+        passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    public PasswordEncoder getPasswordEncoder() {
+        return passwordEncoder;
     }
 
     @Override
@@ -36,7 +42,6 @@ public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         super.configure(auth);
-        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        auth.userDetailsService(userDetailsService).passwordEncoder(encoder);
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 }

@@ -1,29 +1,37 @@
 package com.example.springsecuritylogin.entity;
 
-import com.vaadin.flow.component.template.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document("users")
 public class User {
-    @Id
-    private String id;
-
     @Indexed(unique = true)
-    private final String username;
-    private final String passwordHash;
-
-    public User(String username, String passwordHash) {
-        this.username = username;
-        this.passwordHash = passwordHash;
-    }
+    private String username;
+    private String password;
+    private String emailAddress;
 
     public String getUsername() {
         return username;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 }
 

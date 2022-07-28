@@ -29,6 +29,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserPrincipal(user);
     }
 
+    public boolean isUsernameUnique(String username) {
+        return userRepository.findByUsername(username) == null;
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
     public static class UserPrincipal implements UserDetails {
         private final User user;
 
@@ -43,7 +51,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         @Override
         public String getPassword() {
-            return user.getPasswordHash();
+            return user.getPassword();
         }
 
         @Override
